@@ -12,7 +12,22 @@ angular.module('itunes').service('itunesService', function($http, $q) {
         var defer = $q.defer();
         $http.jsonp('https://itunes.apple.com/search?term=' + artist + '&callback=JSON_CALLBACK')
             .then(function(response) {
-                defer.resolve(response.data.results);
+                var array = response.data.results;
+                var newArray = [];
+
+                for (var i = 0; i < array.length; i++) {
+                    var songObj = {};
+                    songObj.AlbumArt = array[i].artworkUrl100;
+                    songObj.Artist = array[i].artistName;
+                    songObj.Collection = array[i].collectionName;
+                    songObj.CollectionPrice = array[i].collectionPrice;
+                    songObj.Play = array[i].previewUrl;
+                    songObj.Type = array[i].kind;
+
+                    newArray.push(songObj);
+                }
+
+                defer.resolve(newArray);
             }, function(error) {
                 defer.reject(error);
             });
